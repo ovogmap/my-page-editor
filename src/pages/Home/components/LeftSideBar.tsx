@@ -1,17 +1,31 @@
 import styled from "@emotion/styled";
+import { useState } from "react";
+import { IComponentsTypes, selectObjectTypeList } from "..";
 
-const LeftSideBarPure: React.FC = () => {
+interface ILeftSideBarPureProps {
+  onClick: (key: IComponentsTypes) => void;
+}
+
+const LeftSideBarPure: React.FC<ILeftSideBarPureProps> = ({ onClick }) => {
+  const [open, setOpen] = useState(false);
   return (
     <LeftSideBar>
-      <Ul>
-        <Li>test</Li>
-        <Li>test</Li>
-        <Li>test</Li>
-        <Li>test</Li>
-        <Li>test</Li>
-        <Li>test</Li>
-        <Li>test</Li>
-      </Ul>
+      <button onClick={() => setOpen((v) => !v)}>추가</button>
+      {open && (
+        <Ul>
+          {selectObjectTypeList.map((item, i) => (
+            <Li
+              key={i}
+              onClick={() => {
+                setOpen(false);
+                onClick(item.contentTypeKey);
+              }}
+            >
+              {item.displayText}
+            </Li>
+          ))}
+        </Ul>
+      )}
     </LeftSideBar>
   );
 };

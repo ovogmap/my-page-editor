@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import React from "react";
 import { IComponentsTypes, IEditorDataType, ISrcType } from "..";
 import main from "../../../assets/main.jpeg";
 
@@ -12,29 +13,36 @@ const ContentPure: React.FC<IContentPureProps> = ({ editorData }) => {
       case "fullImgContent":
         return <FullImgContent {...props} />;
       case "doubleBoxContent":
-        return <div>test</div>;
+        return (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-around",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{ width: "200px", height: "200px", background: "#333" }}
+            />
+
+            <div
+              style={{ width: "200px", height: "200px", background: "#333" }}
+            />
+          </div>
+        );
+      case "blankSpace":
+        return <div style={{ padding: "20px 0" }} />;
     }
   };
 
   return (
     <Content>
       <Board>
-        {editorData.map((item) => getComponent(item.type, item.props))}
-        {/* <Col>
-          <FullImgContent
-            imgSrc={main}
-            size="small"
-            title="토스커뮤니티 합류 여정"
-            titleColor="#fff"
-            subText={
-              "그동안 경험하셨던 채용 프로세스, 길고 지루하게 느껴졌나요?\n걱정 마세요. 토스커뮤니티 합류 여정을 무사히 완주하실 수 있도록, 토스채용팀이 마라톤\n페이스메이커처럼 도와드리겠습니다."
-            }
-            subTextColor="#fff"
-            textAlign="flex-start"
-            textVertical="flex-end"
-          />
-        </Col> */}
-        {/* <Col></Col> */}
+        {editorData.map((item, i) => (
+          <Col key={i}>{getComponent(item.type, item.props)}</Col>
+        ))}
       </Board>
     </Content>
   );
@@ -148,7 +156,7 @@ const Content = styled.article`
 const Col = styled.div`
   width: 100%;
   min-height: 50px;
-  padding: 16px 0;
+  /* padding: 16px 0; */
   &:active {
     background: #f9f9f9;
     border-radius: 4px 0 0 4px;

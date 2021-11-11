@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
-import { IComponentsTypes, IEditorDataType } from ".";
+import { IComponentsTypes, IEditorDataType, selectObjectTypeList } from ".";
 import { LeftSideBar, Content } from "./components";
 
 interface IHomePureProps {
@@ -15,15 +15,9 @@ const HomePure: React.FC<IHomePureProps> = ({ editorData, onClick }) => {
         <Link to="">
           <h1>myEditor</h1>
         </Link>
-        <button onClick={() => onClick("fullImgContent")}>
-          fullImgContent
-        </button>
-        <button onClick={() => onClick("doubleBoxContent")}>
-          doubleBoxContent
-        </button>
       </Header>
       <Main>
-        <LeftSideBar />
+        <LeftSideBar onClick={onClick} />
         <Content editorData={editorData} />
         {/* <RightSidebar></RightSidebar> */}
       </Main>

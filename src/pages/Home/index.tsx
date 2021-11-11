@@ -3,14 +3,17 @@ import HomePure from "./Home";
 import main from "../../assets/main.jpeg";
 import { IFullImgContentSize } from "./components/Content";
 
-export type IComponentsTypes = "fullImgContent" | "doubleBoxContent";
+export type IComponentsTypes =
+  | "fullImgContent"
+  | "doubleBoxContent"
+  | "blankSpace";
 
 interface ISelectObjectTypeListType {
   displayText: string;
   contentTypeKey: IComponentsTypes;
 }
 
-const selectObjectTypeList: ISelectObjectTypeListType[] = [
+export const selectObjectTypeList: ISelectObjectTypeListType[] = [
   {
     displayText: "이미지",
     contentTypeKey: "fullImgContent",
@@ -18,6 +21,10 @@ const selectObjectTypeList: ISelectObjectTypeListType[] = [
   {
     displayText: "더블박스 컨포넌트",
     contentTypeKey: "doubleBoxContent",
+  },
+  {
+    displayText: "공백",
+    contentTypeKey: "blankSpace",
   },
 ];
 
@@ -31,14 +38,18 @@ const initialContent: {
       size: "small",
       title: "토스커뮤니티 합류 여정",
       titleColor: "#fff",
-      subText: undefined,
-      subTextColor: undefined,
-      textAlign: undefined,
-      textVertical: undefined,
+      subText:
+        "그동안 경험하셨던 채용 프로세스, 길고 지루하게 느껴졌나요?\n걱정 마세요. 토스커뮤니티 합류 여정을 무사히 완주하실 수 있도록, 토스채용팀이 마라톤\n페이스메이커처럼 도와드리겠습니다.",
+      subTextColor: "#fff",
+      textAlign: "flex-start",
+      textVertical: "flex-end",
     },
   },
   doubleBoxContent: {
     type: "doubleBoxContent",
+  },
+  blankSpace: {
+    type: "blankSpace",
   },
 };
 
@@ -66,22 +77,6 @@ const Home: React.FC = () => {
   const [selectContentValue, SetSelectContentValue] =
     useState<IEditorDataType | null>(null);
 
-  const [selectObjectType, setSelectObjectType] =
-    useState(selectObjectTypeList);
-  // const data: IEditorDataType = {
-  //   type: "fullImgContent",
-  //   props: {
-  //     imgSrc: main,
-  //     size: "small",
-  //     title: "토스커뮤니티 합류 여정",
-  //     titleColor: "#fff",
-  //     subText:
-  //       "그동안 경험하셨던 채용 프로세스, 길고 지루하게 느껴졌나요?\n걱정 마세요. 토스커뮤니티 합류 여정을 무사히 완주하실 수 있도록, 토스채용팀이 마라톤\n페이스메이커처럼 도와드리겠습니다.",
-  //     subTextColor: "#fff",
-  //     textAlign: "flex-start",
-  //     textVertical: "flex-end",
-  //   },
-  // };
   const onClick = (key: IComponentsTypes) => {
     setEditorData((v) => [...v, initialContent[key]]);
   };
