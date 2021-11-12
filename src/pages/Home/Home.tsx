@@ -1,25 +1,36 @@
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
-import { IComponentsTypes, IEditorDataType, selectObjectTypeList } from ".";
+import { IComponentsTypes, IEditorDataType } from ".";
 import { LeftSideBar, Content } from "./components";
 
 interface IHomePureProps {
   editorData: IEditorDataType[];
+  open: boolean;
+  openHandle: () => void;
   onClick: (key: IComponentsTypes) => void;
 }
 
-const HomePure: React.FC<IHomePureProps> = ({ editorData, onClick }) => {
+const HomePure: React.FC<IHomePureProps> = ({
+  editorData,
+  onClick,
+  open,
+  openHandle,
+}) => {
   return (
     <Container>
       <Header>
         <Link to="">
           <h1>myEditor</h1>
         </Link>
+        <button onClick={openHandle}>test</button>
       </Header>
       <Main>
-        <LeftSideBar onClick={onClick} />
+        <LeftSideBar onClick={onClick} editorData={editorData} />
         <Content editorData={editorData} />
-        {/* <RightSidebar></RightSidebar> */}
+        <UpdateEditorBar open={open}>
+          <h3>수정하기</h3>
+          <button onClick={openHandle}>취소</button>
+        </UpdateEditorBar>
       </Main>
     </Container>
   );
@@ -66,9 +77,18 @@ const Main = styled.section`
   overflow: hidden;
   display: flex;
   flex-direction: row;
+
+  position: relative;
 `;
 
-const RightSidebar = styled.aside`
+const UpdateEditorBar = styled.aside<{ open: boolean }>`
+  position: absolute;
+  top: 0;
+  left: ${(props) => (props.open ? "0" : "-100%")};
+
+  transition: all 0.7s ease-in-out;
+
+  z-index: 1;
   height: 100%;
   width: 250px;
   background: #ffffff;

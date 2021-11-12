@@ -1,37 +1,24 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { IComponentsTypes, IEditorDataType, ISrcType } from "..";
-import main from "../../../assets/main.jpeg";
+import { IComponentsTypes, IEditorDataType, ISizeType, ISrcType } from "..";
 
 interface IContentPureProps {
   editorData: IEditorDataType[];
 }
 
 const ContentPure: React.FC<IContentPureProps> = ({ editorData }) => {
-  const getComponent = (key: IComponentsTypes, props?: ISrcType) => {
+  console.log("editorData", editorData);
+
+  const getComponent = (
+    key: IComponentsTypes,
+    props?: ISrcType,
+    contents?: ISrcType[]
+  ) => {
     switch (key) {
       case "fullImgContent":
-        return <FullImgContent {...props} />;
+        return <FullImgContent props={props} />;
       case "doubleBoxContent":
-        return (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-around",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{ width: "200px", height: "200px", background: "#333" }}
-            />
-
-            <div
-              style={{ width: "200px", height: "200px", background: "#333" }}
-            />
-          </div>
-        );
+        return <DoubleBoxContent props={props} contents={contents} />;
       case "blankSpace":
         return <div style={{ padding: "20px 0" }} />;
     }
@@ -41,7 +28,9 @@ const ContentPure: React.FC<IContentPureProps> = ({ editorData }) => {
     <Content>
       <Board>
         {editorData.map((item, i) => (
-          <Col key={i}>{getComponent(item.type, item.props)}</Col>
+          <Col key={i}>
+            {getComponent(item.type, item.props, item.contents)}
+          </Col>
         ))}
       </Board>
     </Content>
@@ -49,30 +38,60 @@ const ContentPure: React.FC<IContentPureProps> = ({ editorData }) => {
 };
 export default ContentPure;
 
-export type IFullImgContentSize = "small" | "ragular" | "large";
+interface IDoubleBoxContent
+  extends Pick<IEditorDataType, "contents" | "props"> {}
 
-interface IFullImgContentProps {
-  imgSrc?: string;
-  size?: IFullImgContentSize;
-  title?: string;
-  titleColor?: string;
-  subText?: string;
-  subTextColor?: string;
-  textAlign?: string;
-  textVertical?: string;
-}
+const DoubleBoxContent: React.FC<IDoubleBoxContent> = ({ props, contents }) => {
+  console.log("props", props);
+  console.log("contents", contents);
+  return (
+    <DoubleBoxContainer {...props}>
+      {contents?.map((item) => (
+        <BoxContent {...item}>
+          <TextContent>
+            <TItle {...item}>{item.title}</TItle>
+            <SubText {...item}>{item.subText}</SubText>
+          </TextContent>
+        </BoxContent>
+      ))}
+    </DoubleBoxContainer>
+  );
+};
 
-const FullImgContent: React.FC<IFullImgContentProps> = ({
-  imgSrc,
-  size = "ragular",
-  title,
-  titleColor,
-  subText,
-  subTextColor,
-  textAlign = "flex-start",
-  textVertical = "flex-end",
-}) => {
-  const clacHeight = (size: IFullImgContentSize) => {
+const DoubleBoxContainer = styled.div<ISrcType>`
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: ${(props) => props.doubleContentGap};
+`;
+
+const BoxContent = styled.div<ISrcType>`
+  width: ${(props) => props.contentWidth || "320px"};
+  height: ${(props) => props.contentHeight || "400px"};
+
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: ${(props) => props.textVertical || "flex-end"};
+  justify-content: ${(props) => props.textAlign || "flex-start"};
+  color: ${(props) => props.titleColor || "#fff"};
+  font-size: ${(props) => props.titleFontSize || "14px"};
+  background-image: url(${(props) => props.imgSrc});
+  background-size: cover;
+  background-repeat: no-repeat;
+`;
+
+/**
+ *
+ * FullImgContent Component
+ *
+ */
+
+interface IFullImgContentProps extends Pick<IEditorDataType, "props"> {}
+
+const FullImgContent: React.FC<IFullImgContentProps> = ({ props }) => {
+  const clacHeight = (size?: ISizeType) => {
     switch (size) {
       case "small":
         return "300px";
@@ -85,24 +104,16 @@ const FullImgContent: React.FC<IFullImgContentProps> = ({
     }
   };
 
-  if (!imgSrc) return <div>이미지를 등록해주세요.</div>;
+  if (!props || !props.imgSrc) return <div>이미지를 등록해주세요.</div>;
   return (
-    <ImgContainer
-      height={clacHeight(size)}
-      imgSrc={imgSrc}
-      textAlign={textAlign}
-      textVertical={textVertical}
-    >
+    <FullImgContainer height={clacHeight(props.size)} {...props}>
       <TextContent>
-        <TItle titleColor={titleColor}>{title}</TItle>
-        <SubText subTextColor={subTextColor}>{subText}</SubText>
+        <TItle {...props}>{props.title}</TItle>
+        <SubText {...props}>{props.subText}</SubText>
       </TextContent>
-    </ImgContainer>
+    </FullImgContainer>
   );
 };
-
-interface ITextContentProps
-  extends Pick<IFullImgContentProps, "textAlign" | "textVertical"> {}
 
 const TextContent = styled.div`
   display: flex;
@@ -111,25 +122,23 @@ const TextContent = styled.div`
   gap: 8px;
 `;
 
-interface ISubTextProps extends Pick<IFullImgContentProps, "subTextColor"> {}
-
-const SubText = styled.p<ISubTextProps>`
+const SubText = styled.p<ISrcType>`
   color: ${(props) => props.subTextColor || "#fff"};
+  font-size: ${(props) => props.subTextFontSize || "14px"};
   white-space: pre-wrap;
 `;
 
-interface ITitleProps extends Pick<IFullImgContentProps, "titleColor"> {}
-
-const TItle = styled.h2<ITitleProps>`
+const TItle = styled.h2<ISrcType>`
   color: ${(props) => props.titleColor || "#fff"};
+  font-size: ${(props) => props.titleFontSize || "20px"};
+  white-space: pre-wrap;
 `;
 
-interface IImgContainerProps
-  extends Pick<IFullImgContentProps, "imgSrc" | "textAlign" | "textVertical"> {
+interface IImgContainerProps extends ISrcType {
   height: string;
 }
 
-const ImgContainer = styled.div<IImgContainerProps>`
+const FullImgContainer = styled.div<IImgContainerProps>`
   width: 100%;
   padding: 20px;
   height: ${(props) => props.height};
@@ -138,8 +147,8 @@ const ImgContainer = styled.div<IImgContainerProps>`
   background-repeat: no-repeat;
 
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
+  align-items: ${(props) => props.textVertical || "flex-end"};
+  justify-content: ${(props) => props.textAlign || "flex-start"};
 `;
 
 const Content = styled.article`
@@ -167,11 +176,12 @@ const Col = styled.div`
 
 const Board = styled.section`
   width: 80px;
-  min-width: 800px;
+  min-width: 1200px;
   min-height: 500px;
   border-radius: 8px;
   box-shadow: 0 1px 1px rgb(0 0 0 / 6%), 0 3px 12px rgb(0 0 0 / 15%);
   background: #fff;
+  overflow: hidden;
 
-  padding: 20px 0;
+  padding: 0;
 `;
